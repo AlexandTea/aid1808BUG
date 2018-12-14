@@ -8,8 +8,8 @@
 </head>
 <body>
     <h1>这是主页</h1>
-    {% if lname %}
-    <h1>恭喜你,{{lname}},登录成功!</h1>
+    {% if uname %}
+    <h1>恭喜你,{{uname}},登录成功!</h1>
     
     {% endif %}
     <form action="/cancel" method = 'POST'>
@@ -18,9 +18,7 @@
         <!-- <button type="submit">退出登录</button> -->
     </form>
     <form action="/private" method = 'GET'>
-        <!-- 清除session信息 -->
         <input type="submit"  value='个人中心'>
-        <!-- <button type="submit">退出登录</button> -->
     </form>
 </body>
 </html>

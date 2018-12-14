@@ -176,7 +176,7 @@
                 <div class="container-fluid">
                     <div class="col-md-6">
                         <div class="left-content">
-                            <h2>About Me</h2>
+                            <h2>{{user.name}}您好!</h2>
                             <div id='infor'>
                             <form action="/private" method="POST" name='form1' enctype="multipart/form-data">
                                 <div class="inputFileWrapper">
@@ -188,7 +188,6 @@
                                         </span>
                                     </label>
                                 </div>
-                                <span class="note">用户名:</span> <input type="text" name='username'value='{{user.name}}'><br>
                                 <span class="note">账户密码:</span><input type="password" id='password' name='z' placeholder="请在这里修改密码"><br>
                                 <span class='note'>手机号  :</span> <input type="number" name="phonenumber" value="{{user.phonenumber}}"><br>
                                 <span class='note'>邮箱  :</span> <input type="email" name="email" value="{{user.email}}"><br>

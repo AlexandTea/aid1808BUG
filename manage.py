@@ -8,10 +8,14 @@
 from flask_migrate import Migrate, MigrateCommand
 # prompt_bool是用于删除数据库之前的提示,
 from flask_script import Manager, Shell, prompt_bool
-# 导入模型
-from models import *
-#主文件中导入app初始化manage
-from config import app, db
+
+
+
+from app import create_app,db
+
+app = create_app()
+
+
 
 #让python支持命令行工作
 manager = Manager(app)
@@ -38,5 +42,5 @@ def drop():
     return '删除需谨慎！'
  
 if __name__ == '__main__':
-    # 若没带命令,则会进入测试服务器环境
+    # 若没带命令,则会进入测试服务器环境(127.0.0.1:5000),可指定ip(-h xxxx)和端口(-p xxxx)
     manager.run()

@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <script src="/static/js/jquery-3.3.1.js"></script>
+    <script src="/static/js/md5.js"></script>
+    <script>
+        $(function(){
+            $('#btn').click(function(){
+                var testvalue = $('#test').val()
+                console.log('testvalue:'+testvalue)
+                var md5_testvalue='upassword='+hex_md5(testvalue);
+                $.get('/00-test',md5_testvalue,function(data){
+                    if(data.status==1){
+                            $('#warning').html(data.text)
+                        }else{
+                            $('#warning').html(data.text)
+                        }
+                },'json')
+            })
+        })
+    </script>
+</head>
+<body>
+    <input type='text' id="test">
+    <button id="btn">测试按钮</button>
+    <div id="warning"></div>
+</body>
+</html>

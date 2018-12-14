@@ -1,0 +1,418 @@
+
+<!DOCTYPE html>
+<html>
+
+<!-- Head -->
+<head>
+
+	<title>住房位置信息查询系统登录界面</title>
+	<link rel="icon" href="/static/images/logo.ico" type="images/x-ico"/>
+	<!-- Meta-Tags -->
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+
+		<script type="application/x-javascript"> addEventListener("load", function() { setTimeout(hideURLbar, 0); }, false); function hideURLbar(){ window.scrollTo(0,1); } </script>
+	<!-- //Meta-Tags -->
+
+	<!-- Style -->
+	 <link rel="stylesheet" href="/static/css/style.css" type="text/css" media="all">
+	
+	<style>
+	::-webkit-input-placeholder{
+		color:rgb(255, 255, 255);
+		opacity: 0.4;
+	
+	}
+	.hidden{
+		visibility: hidden;
+		border-style: none;
+		height: 1px;
+		width: 1px;
+		float: right;
+		
+	}
+	#copy{
+		color: black;
+	}
+	#loginpassword {
+		margin: 3;
+	}
+	#loginname {
+		margin-bottom: 2;
+	}
+	#getvalue{
+		height: 45px;
+		width: 100px;
+		background-color:rgba(17, 23, 27, 0.5);
+		font-size: 16px;
+		color: rgba(245, 240, 240, 0.5);
+	}
+	#registersubmit{
+		height: 45px;
+		width: 100px;
+		background-color:rgba(17, 23, 27, 0.5);
+		font-size: 16px;
+		color: rgba(245, 240, 240, 0.5);
+	}
+	</style>
+	<!-- 引入外部js文件 -->
+	<script src="/static/js/jquery-3.3.1.js"></script>
+	<script src="/static/js/md5.js"></script>
+	<script>
+		$(function(){
+			// 判断数据库中是否有该用户名
+			function check_login(){
+				var uname = $('#loginname').val()
+				if(uname){
+					$.ajax({
+						url:'/01-check?uname='+uname,
+						type:'get',
+						dataType:'json',
+						success:function(data){
+							if (data.status == 1){
+								$('#loginprompt').html('*该用户名可以登录');
+								$('#loginprompt').css('color',"green");
+								$('#loginprompt').css('font-size',"14px");
+								return true;
+							}else{
+								$('#loginprompt').html('*该用户名未注册,请重新输入');
+								$('#loginprompt').css('color',"red");
+								$('#loginprompt').css('font-size',"14px");
+								return false;
+							};
+						}
+					});
+				}else{
+					$('#loginprompt').html('*(不少于6位,不可包含"/"或者空格等特殊字符)');
+					$('#loginprompt').css('color',"white");
+					$('#loginprompt').css('font-size',"14px");
+					setTimeout("$('#loginprompt').html('')",2000);
+				};
+			};
+			$('#loginname').blur(check_login);
+			// 判断点击事件,验证账户密码,然后进行登录验证
+			$('#getvalue').click(function(){
+				if(check_login){
+					var uname = $('#loginname').val()
+					var upassword = $('#loginpassword').val()
+					if($("#brand1").is(":checked")){
+						$('#brand1').val(1)
+					}else{
+						$('#brand1').val(0)
+					}
+					var rememberme = $('#brand1').val()
+					console.log(rememberme)
+					if(upassword){
+						var md5_upwd = hex_md5(upassword)
+						var params={
+							'uname':uname,
+							'upassword':md5_upwd,
+							'rememberme':rememberme,
+						}
+						$.post(
+							'/login',
+							params,
+							function(data){
+								if (data.status == 1){
+									$('#pwdprompt').html('*登录成功!');
+									$('#pwdprompt').css('color',"green");
+									$('#pwdprompt').css('font-size',"14px");
+									setTimeout("window.location.href='/'",800);
+									
+									// return true;
+								}else if(data.status == 2){
+									$('#pwdprompt').html('*登录成功!');
+									$('#pwdprompt').css('color',"green");
+									$('#pwdprompt').css('font-size',"14px");
+									setTimeout("window.location.href='/setsession'",800);
+								}else{
+									$('#pwdprompt').html('*密码错误请重新输入!');
+									$('#pwdprompt').css('color',"red");
+									$('#pwdprompt').css('font-size',"14px");
+									$('#loginpassword').val('')
+									// return false;
+									console.log(data.url)
+									console.log('登录失败!')
+								};
+							},'json'
+						);
+					}else{
+						$('#pwdprompt').html('密码不可为空!')
+						$('#pwdprompt').css('font-size','14px');
+						$('#pwdprompt').css('color','red');
+					};
+				};
+			});
+			$('#loginpassword').focus(function(){
+				$('#pwdprompt').html('*(不少于6位,不可包含"/"或者空格等特殊字符)')
+				$('#pwdprompt').css('font-size','14px');
+				$('#pwdprompt').css('color','white');
+			});
+			$('#loginpassword').blur(function(){
+					$('#pwdprompt').html('')
+			});
+			// 验证用户名是否被注册
+			function check_register(){
+				var uname = $('#registername').val()
+				if(uname){
+					$.ajax({
+						url:'/01-check?uname='+uname,
+						type:'get',
+						dataType:'json',
+						success:function(data){
+							if (data.status == 1){
+								$('#regunameprompt').html('*该用户名已经注册!请重新输入');
+								$('#regunameprompt').css('color',"red");
+								$('#regunameprompt').css('font-size',"14px");
+								return false;
+							}else{
+								$('#regunameprompt').html('*该用户名未被注册,可继续注册');
+								$('#regunameprompt').css('color',"green");
+								$('#regunameprompt').css('font-size',"14px");
+								return true;
+							};
+						}
+					});
+				}else{
+					$('#regunameprompt').html('*(不少于6位,不可包含"/"或者空格等特殊字符)');
+					$('#regunameprompt').css('color',"white");
+					$('#regunameprompt').css('font-size',"14px");
+					setTimeout("$('#regunameprompt').html('')",2000);
+				};
+			};
+			$('#registername').blur(check_register);
+			// 验证电话号码
+			function check_phonenumber(){
+				var regnumber = $('#registernumber').val()
+				if((/^[0-9]+$/.test(regnumber)) && (regnumber)){
+					$.ajax({
+						url:'/02-checknumber?phonenumber='+regnumber,
+						type:'get',
+						dataType:'json',
+						success:function(data){
+							if (data.status == 1){
+								$('#numberprompt').html('*该手机号已经被注册!请重新输入');
+								$('#numberprompt').css('color',"red");
+								$('#numberprompt').css('font-size',"14px");
+								return false;
+							}else{
+								$('#numberprompt').html('*该手机号未被注册,可继续注册');
+								$('#numberprompt').css('color',"green");
+								$('#numberprompt').css('font-size',"14px");
+								return true;
+							};
+						}
+					});
+				}else{
+					$('#numberprompt').html('*请输入您的手机号,不能包含字母');
+					$('#numberprompt').css('color',"white");
+					$('#numberprompt').css('font-size',"14px");
+					return false;
+				};
+			};
+			$('#registernumber').blur(check_phonenumber);
+			// 验证邮箱
+			function check_email(){
+				var regemail = $('#registeremail').val()
+				var pattern= /^([a-zA-Z0-9]+[_|\_|\.]?)*[a-zA-Z0-9]+@([a-zA-Z0-9]+[_|\_|\.]?)*[a-zA-Z0-9]+\.[a-zA-Z]{2,3}$/;
+				var strEmail=pattern.test(regemail);
+				if(strEmail && regemail){
+					$.ajax({
+						url:'/03-checkemail?uemail='+regemail,
+						type:'get',
+						dataType:'json',
+						success:function(data){
+							if (data.status == 1){
+								$('#emailprompt').html('*该邮箱已经被注册!请重新输入');
+								$('#emailprompt').css('color',"red");
+								$('#emailprompt').css('font-size',"14px");
+								return false;
+							}else{
+								$('#emailprompt').html('*该邮箱未被注册,可继续注册');
+								$('#emailprompt').css('color',"green");
+								$('#emailprompt').css('font-size',"14px");
+								return true;
+							};
+						}
+					});
+				}else{
+					$('#emailprompt').html('*请输入您的邮箱并符合邮箱格式');
+					$('#emailprompt').css('color',"white");
+					$('#emailprompt').css('font-size',"14px");
+					return false;
+				};
+			};
+			$('#registeremail').blur(check_email);
+			// 密码的验证
+			$('#regpwd1').focus(function(){
+				$('#regpwdprompt').html('*(不少于6位,不可包含"/"或者空格等特殊字符)')
+				$('#regpwdprompt').css('font-size','14px');
+				$('#regpwdprompt').css('color','white');
+			});
+			$('#regpwd1').blur(function(){
+					$('#regpwdprompt').html('')
+			});
+			// 二次密码的验证
+			$('#regrepwd1').focus(function(){
+				$('#regrepwdprompt').html('*(不少于6位,不可包含"/"或者空格等特殊字符)')
+				$('#regrepwdprompt').css('font-size','14px');
+				$('#regrepwdprompt').css('color','white');
+			});
+			function check_repassword(){
+				var regpwd = $('#regpwd1').val()
+				var regrepwd = $('#regrepwd1').val()
+				if(regpwd == regrepwd && regpwd){
+					$('#regrepwdprompt').html('重复密码一致,请点击注册!')
+					$('#regrepwdprompt').css('font-size','14px');
+					$('#regrepwdprompt').css('color','green');
+					return true;
+				}else if(regpwd != regrepwd) {
+					$('#regrepwdprompt').html('重复密码不一致,请重新输入密码!')
+					$('#regrepwdprompt').css('font-size','14px');
+					$('#regrepwdprompt').css('color','red');
+					$('#regrepwd1').val('');
+					return false;
+					// 设置延迟执行
+					setTimeout("$('#regrepwdprompt').html('')",2000);
+				}
+			};
+			$('#regrepwd1').blur(check_repassword);
+			// 验证注册密码
+			$('#registersubmit').click(function(){
+				if(check_register&&check_phonenumber&&check_email&&check_repassword){
+					var uname = $('#registername').val()
+					var regnumber = $('#registernumber').val()
+					var regemail = $('#registeremail').val()
+					var regrepwd = $('#regrepwd1').val()
+					var md5_upwd = hex_md5(regrepwd)
+					var params={
+						'uname':uname,
+						'upassword':md5_upwd,
+						'uemail':regemail,
+						'phonenumber':regnumber,
+					}
+					console.log(params)
+					$.post(
+						'/register',
+						params,
+						function(data){
+							console.log(data.status)
+							if (data.status == 1){
+								$('#regsubmitprompt').html('*登录成功!');
+								$('#regsubmitprompt').css('color',"green");
+								$('#regsubmitprompt').css('font-size',"14px");
+								console.log(data.info);
+								setTimeout("window.location.href='/'",1000);
+								// return true;
+							}else{
+								$('#regsubmitprompt').html('*发生异常!');
+								$('#regsubmitprompt').css('color',"red");
+								$('#regsubmitprompt').css('font-size',"14px");
+								$('#regrepwd1').val('')
+								$('#regpwd1').val('')
+								// return false;
+								console.log(data.url)
+								console.log('注册失败!请重新输入密码')
+							};
+						},'json'
+					);
+				};
+			});
+		});
+	</script>
+	
+</head>
+<!-- //Head -->
+
+<!-- Body -->
+<body>
+
+	<h1>欢迎登录/注册</h1>
+
+	<div class="container w3layouts agileits">
+
+		<div class="login w3layouts agileits">
+			<h2>登 录</h2>
+			<!-- 这里是登录界面 -->
+				<input type="text" Name="username" placeholder="用户名" 
+				onfocus='this.placeholder=""' onblur='this.placeholder="用户名"' id="loginname" required=''>
+				<span id="loginprompt"></span>
+				<input type="password" name="loginpassword" placeholder="密码" 
+				onfocus='this.placeholder=""' onblur='this.placeholder="密码"' id='loginpassword' required=''>
+				<div id="pwdprompt"></div>
+			<ul class="tick w3layouts agileits">
+				<li >
+					<input type="checkbox" id="brand1" value="" name="check">
+					<label for="brand1"><span></span>记住我</label>
+				</li>
+			</ul>
+			<div class="send-button w3layouts agileits">
+					<button id='getvalue'>登录</button>
+					
+			</div>
+			<div id='loginalert'></div>
+			<!-- <a href="#">忘记密码?</a> -->
+			<!-- <div class="social-icons w3layouts agileits">
+				<p>- 其他方式登录 -</p>
+				<ul>
+					<li class="qq"><a href="#">
+					<span class="icons w3layouts agileits"></span>
+					<span class="text w3layouts agileits">QQ</span></a></li>
+					<li class="weixin w3ls"><a href="#">
+					<span class="icons w3layouts"></span>
+					<span class="text w3layouts agileits">微信</span></a></li>
+					<li class="weibo aits"><a href="#">
+					<span class="icons agileits"></span>
+					<span class="text w3layouts agileits">微博</span></a></li>
+					<div class="clear"> </div>
+				</ul>
+			</div> -->
+			<div class="clear"></div>
+		</div>
+		
+<!-- 这是注册部分 -->
+		<div class="register w3layouts agileits">
+			<h2>注 册</h2>
+				<input type="text" Name="username" placeholder="用户名" 
+				onfocus='this.placeholder=""' onblur='this.placeholder="用户名"' required="" id="registername">
+				<div id="regunameprompt"></div>
+				<input type="text" Name="phonenumber"  id="registernumber"
+				placeholder="手机号码"  onfocus='this.placeholder=""' onblur='this.placeholder="手机号码"' required="">
+				<div id="numberprompt"></div>
+				<!-- <input type="text" Name="yanzhengma" 
+				placeholder="6位验证码"  onfocus='this.placeholder=""' onblur='this.placeholder="6位验证码"' required=""> -->
+				<input type="text" Name="uemail" placeholder="邮箱" 
+				onfocus='this.placeholder=""' onblur='this.placeholder="邮箱"' required="" id="registeremail">
+				<div id="emailprompt"></div>
+				<input type="password" Name="pwd1" id='regpwd1' placeholder="密码" 
+				onfocus='this.placeholder=""' onblur='this.placeholder="密码"'  required="">
+				<div id="regpwdprompt"></div>
+				<input type="password" Name="repwd1" id ='regrepwd1'
+				placeholder="请重新输入密码(与密码一致)" onfocus='this.placeholder=""' onblur='this.placeholder="请重新输入密码(与密码一致)"'  required="">
+				<div id="regrepwdprompt"></div>
+				<div class="send-button w3layouts agileits">
+						<input type="button" value="免费注册" id='registersubmit'>
+				</div>
+					<div id="regsubmitprompt"></div>
+			
+			<div class="clear"></div>
+		</div>
+
+		<div class="clear"></div>
+
+	</div>
+
+	<div class="footer w3layouts agileits" >
+		<p id='copy'>Copyright &copy; Engineering team of BUG</p>
+	</div>
+<div style="text-align:center;">
+
+</div>
+<div>
+	
+</div>
+
+</body>
+<!-- //Body -->
+
+</html>
