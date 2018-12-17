@@ -224,8 +224,9 @@ def private():
             ext = f.filename.split('.')[-1]
             filename =  datetime.now().strftime('%Y%m%d%H%M%S%f') + '.' + ext
             # 默认图片路径
-            defaultpath="/Users/zhaozhengxing/Documents/OneDrive/demo/app/static/images/uploads/"
-            filepath = defaultpath+filename
+            defaultpath=os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+            filepath = defaultpath+r'/static/images/uploads/'+filename
+            print('filepath:',filepath)
             f.save(filepath)
             user.imgpath = r'/static/images/uploads/'+filename
         if request.form.get('upassword','') :

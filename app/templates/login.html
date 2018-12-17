@@ -83,7 +83,7 @@
 						}
 					});
 				}else{
-					$('#loginprompt').html('*(不少于6位,不可包含"/"或者空格等特殊字符)');
+					$('#loginprompt').html('*(6位~20位,不可包含"/"或者空格等特殊字符)');
 					$('#loginprompt').css('color',"white");
 					$('#loginprompt').css('font-size',"14px");
 					setTimeout("$('#loginprompt').html('')",2000);
@@ -144,7 +144,7 @@
 				};
 			});
 			$('#loginpassword').focus(function(){
-				$('#pwdprompt').html('*(不少于6位,不可包含"/"或者空格等特殊字符)')
+				$('#pwdprompt').html('*(6位~20位,不可包含"/"或者空格等特殊字符)')
 				$('#pwdprompt').css('font-size','14px');
 				$('#pwdprompt').css('color','white');
 			});
@@ -154,7 +154,8 @@
 			// 验证用户名是否被注册
 			function check_register(){
 				var uname = $('#registername').val()
-				if(uname){
+				var unameExp = new RegExp(/^[a-zA-Z0-9_-]{4,16}$/);
+				if(unameExp.test(uname)){
 					$.ajax({
 						url:'/01-check?uname='+uname,
 						type:'get',
@@ -174,7 +175,7 @@
 						}
 					});
 				}else{
-					$('#regunameprompt').html('*(不少于6位,不可包含"/"或者空格等特殊字符)');
+					$('#regunameprompt').html('*(6位~20位,不可包含"/"或者空格等特殊字符)');
 					$('#regunameprompt').css('color',"white");
 					$('#regunameprompt').css('font-size',"14px");
 					setTimeout("$('#regunameprompt').html('')",2000);
@@ -184,7 +185,9 @@
 			// 验证电话号码
 			function check_phonenumber(){
 				var regnumber = $('#registernumber').val()
-				if((/^[0-9]+$/.test(regnumber)) && (regnumber)){
+				// 设置正则表达式
+				var numberExp = new RegExp(/^1\d{10}$/);
+				if(numberExp.test(regnumber)){
 					$.ajax({
 						url:'/02-checknumber?phonenumber='+regnumber,
 						type:'get',
@@ -204,9 +207,10 @@
 						}
 					});
 				}else{
-					$('#numberprompt').html('*请输入您的手机号,不能包含字母');
-					$('#numberprompt').css('color',"white");
+					$('#numberprompt').html('*请输入您的手机号,符合电话号码格式');
+					$('#numberprompt').css('color',"red");
 					$('#numberprompt').css('font-size',"14px");
+					setTimeout("$('#numberprompt').html('')",2000);
 					return false;
 				};
 			};
@@ -214,9 +218,8 @@
 			// 验证邮箱
 			function check_email(){
 				var regemail = $('#registeremail').val()
-				var pattern= /^([a-zA-Z0-9]+[_|\_|\.]?)*[a-zA-Z0-9]+@([a-zA-Z0-9]+[_|\_|\.]?)*[a-zA-Z0-9]+\.[a-zA-Z]{2,3}$/;
-				var strEmail=pattern.test(regemail);
-				if(strEmail && regemail){
+				var pattern= new RegExp(/^([a-zA-Z0-9]+[_|\_|\.]?)*[a-zA-Z0-9]+@([a-zA-Z0-9]+[_|\_|\.]?)*[a-zA-Z0-9]+\.[a-zA-Z]{2,3}$/);
+				if(pattern.test(regemail)){
 					$.ajax({
 						url:'/03-checkemail?uemail='+regemail,
 						type:'get',
@@ -237,26 +240,39 @@
 					});
 				}else{
 					$('#emailprompt').html('*请输入您的邮箱并符合邮箱格式');
-					$('#emailprompt').css('color',"white");
+					$('#emailprompt').css('color',"red");
 					$('#emailprompt').css('font-size',"14px");
+					setTimeout("$('#emailprompt').html('')",2000);
 					return false;
 				};
 			};
 			$('#registeremail').blur(check_email);
 			// 密码的验证
-			$('#regpwd1').focus(function(){
-				$('#regpwdprompt').html('*(不少于6位,不可包含"/"或者空格等特殊字符)')
-				$('#regpwdprompt').css('font-size','14px');
-				$('#regpwdprompt').css('color','white');
-			});
 			$('#regpwd1').blur(function(){
-					$('#regpwdprompt').html('')
+				var regpwd = $('#regpwd1').val()
+				var pwdExp = new RegExp(/^(\w){6,20}$/)
+				if(pwdExp.test(regpwd)){
+					$('#regpwdprompt').html('您输入的密码可用,请继续输入.')
+					$('#regpwdprompt').css('font-size','14px');
+					$('#regpwdprompt').css('color','green');	
+				}else{
+					$('#regpwdprompt').html('*(6位~20位,不可包含"/"或者空格等特殊字符)')
+					$('#regpwdprompt').css('font-size','14px');
+					$('#regpwdprompt').css('color','red');
+					setTimeout("$('#regpwdprompt').html('')",2000);
+				}
+			});
+			$('#regpwd1').focus(function(){
+					$('#regpwdprompt').html('*(6位~20位,不可包含"/"或者空格等特殊字符)')
+					$('#regpwdprompt').css('font-size','14px');
+					$('#regpwdprompt').css('color','white');
 			});
 			// 二次密码的验证
 			$('#regrepwd1').focus(function(){
-				$('#regrepwdprompt').html('*(不少于6位,不可包含"/"或者空格等特殊字符)')
+				$('#regrepwdprompt').html('*(6位~20位,不可包含"/"或者空格等特殊字符)')
 				$('#regrepwdprompt').css('font-size','14px');
 				$('#regrepwdprompt').css('color','white');
+				setTimeout("$('#regrepwdprompt').html('')",2000);
 			});
 			function check_repassword(){
 				var regpwd = $('#regpwd1').val()
@@ -302,7 +318,7 @@
 								$('#regsubmitprompt').css('color',"green");
 								$('#regsubmitprompt').css('font-size',"14px");
 								console.log(data.info);
-								setTimeout("window.location.href='/'",1000);
+								setTimeout("window.location.href='/'",800);
 								// return true;
 							}else{
 								$('#regsubmitprompt').html('*发生异常!');
