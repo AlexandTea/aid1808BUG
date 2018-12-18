@@ -43,6 +43,42 @@ def index():
         print('存在cookies信息,直接登录')
         return render_template('/index.html',uname=uname)
 
+@main.route('/index_list',methods=['GET','POST'])
+@login_required
+def index_list():
+    '''用于抵达列表页'''
+    if session.get('uname','') and session.get('upwd',''):
+        uname = session.get('uname','')
+        print('存在session信息,直接登录')
+        return render_template('/index_list.html',uname=uname)
+    elif request.cookies.get('uname','') and request.cookies.get('upwd',''):
+        session['uname']=request.cookies.get('uname','')
+        session['upwd']=request.cookies.get('upwd','')
+        uname = session['uname']
+        print('存在cookies信息,直接登录')
+        return render_template('/index_list.html',uname=uname)
+
+@main.route('/index_detail',methods=['GET','POST'])
+@login_required
+def index_detail():
+    '''用于抵达详情页'''
+    if session.get('uname','') and session.get('upwd',''):
+        uname = session.get('uname','')
+        print('存在session信息,直接登录')
+        return render_template('/index_detail.html',uname=uname)
+    elif request.cookies.get('uname','') and request.cookies.get('upwd',''):
+        session['uname']=request.cookies.get('uname','')
+        session['upwd']=request.cookies.get('upwd','')
+        uname = session['uname']
+        print('存在cookies信息,直接登录')
+        return render_template('/index_detail.html',uname=uname)
+
+
+# @main.route('/gaode',methods=['GET','POST'])
+# def gaode():
+#     '''用于抵达测试地图页'''
+#     return render_template('/api_finall.html')
+
 @main.route('/login',methods=['GET','POST'])
 def login():
     '''用于登录'''
@@ -158,7 +194,7 @@ def setsession():
         resp.set_cookie('upwd',upwd,7*24*60*60)
         return resp
 
-@main.route('/cancel',methods=['POST'])
+@main.route('/cancel',methods=['GET','POST'])
 def cancel():
     '''用于注销信息'''
     resp = redirect('/')
@@ -204,6 +240,7 @@ def register():
 # 用于拦截登录
 @login_required
 def private():
+    '''用于展示个人主页'''
     uname=session.get('uname','')
     user = Users.query.filter_by(name=uname).first()
     print('user:',user)

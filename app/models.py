@@ -42,44 +42,83 @@ class Users(db.Model):
         }
         return dic
 
-# class Houses(db.Model):
-#     '''
-#         房屋信息表
-#     '''
-#     __tablename__ = 'houses'
-#     id = db.Column(db.Integer, primary_key=True)
-#     title = db.Column(db.String(200),nullable=False)
-#     pub_date = db.Column(db.DateTime,nullable=False)
-#     read_num = db.Column(db.Integer)
-#     content = db.Column(db.Text, nullable=False)
-#     images = db.Column(db.Text)
+class Houses(db.Model):
+    '''
+        房屋信息表
+    '''
+    __tablename__ = 'houses'
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(200),nullable=False)
+    pub_date = db.Column(db.DateTime,nullable=False)
+    address = db.Column(db.String(200),nullable=False)
+    urls = db.Column(db.String(200),nullable=False)
+    district = db.Column(db.String(200),nullable=False)
+    content = db.Column(db.Text, nullable=False)
+    house_image = db.Column(db.String(120), default=r'/static/images/house/default.jpg')
+    history_users = db.relationship('Users',secondary='history',lazy='dynamic',backref=db.backref('history_houses',lazy='dynamic'))
+    favor_users = db.relationship('Users',secondary='favor',lazy='dynamic',backref=db.backref('favor_houses',lazy='dynamic'))
 
-#     def __init__(self, title,pub_date,read_num, content,images):
-#         # 用于实例对象进行赋值
-#         pass
+    def __init__(self, title,pub_date,address,urls,district,content,house_images):
+        # 用于实例对象进行赋值
+        self.title = title
+        self.pub_date = pub_date
+        self.address = address
+        self.urls=urls
+        self.district = district
+        self.content = content
+        self.house_image = house_images
 
-#     def __repr__(self):
-#         return f'<User:{self.title}>'
+    def __repr__(self):
+        return f'<User:{self.title}>'
 
-# class History(db.Model):
-#     '''
-#         查询记录表
-#     '''
-#     __tablename__ = 'history'
-#     id = db.Column(db.Integer, primary_key=True)
-#     title = db.Column(db.String(200),nullable=False)
-#     pub_date = db.Column(db.DateTime,nullable=False)
-#     read_num = db.Column(db.Integer)
-#     content = db.Column(db.Text, nullable=False)
-#     images = db.Column(db.Text)
+    def to_dic(self):
+        dic = {
+            'id':self.id,
+            'title':self.title,
+            'pub_date':self.pub_date,
+            'address':self.address,
+            'urls':self.urls,
+            'district':self.district,
+            'content':self.content,
+            'house_image':self.house_image,
+        }
+        return dic
+
+class History(db.Model):
+    '''
+        查询记录表
+    '''
+    __tablename__ = 'history'
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer,db.ForeignKey('users.id'))
+    house_id = db.Column(db.Integer,db.ForeignKey('houses.id'))
+    pub_date = db.Column(db.DateTime,nullable=False)
 
 
-#     def __init__(self, title,pub_date,read_num, content,images):
-#         # 用于实例对象进行赋值
-#         pass
+    def __init__(self, user_id,house_id,pub_date):
+        # 用于实例对象进行赋值
+        self.user_id = user_id
+        self.house_id = house_id
+        self.pub_date = pub_date
 
-#     def __repr__(self):
-#         return f'<User:{self.title}>'
+
+class Favor(db.Model):
+    '''
+        用户收藏
+    '''
+    __tablename__ = 'favor'
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer,db.ForeignKey('users.id'))
+    house_id = db.Column(db.Integer,db.ForeignKey('houses.id'))
+    pub_date = db.Column(db.DateTime,nullable=False)
+
+    def __init__(self, user_id, house_id, pub_date):
+        # 用于实例对象进行赋值
+        self.user_id = user_id
+        self.house_id = house_id
+        self.pub_date = pub_date
+
+
 
     
  
